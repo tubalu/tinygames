@@ -1,4 +1,3 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { mockLeaderboard } from './submit'
 
 interface LeaderboardEntry {
@@ -18,19 +17,18 @@ interface LeaderboardEntry {
 // For local development without KV
 const isLocal = process.env.NODE_ENV === 'development' && !process.env.KV_REST_API_URL
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Only allow GET requests
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
-
-  // Set CORS headers for local development
+export default async function handler(req: any, res: any) {
+  // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end()
+  }
+
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' })
   }
 
   try {
@@ -41,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const key = `${game}:${difficulty}`
-    const maxResults = Math.min(parseInt(limit as string) || 50, 100)
+    const maxResults = Math.min(parseInt(limit) || 50, 100)
 
     let leaderboard: LeaderboardEntry[] = []
 
