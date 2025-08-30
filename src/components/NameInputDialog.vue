@@ -152,24 +152,23 @@ onMounted(async () => {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 1000;
   font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 11px;
 }
 
 .name-input-window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: #c0c0c0;
   border: 2px solid;
   border-color: #dfdfdf #808080 #808080 #dfdfdf;
   box-shadow: 
     inset 1px 1px 0px #ffffff,
     2px 2px 4px rgba(0, 0, 0, 0.3);
-  min-width: 320px;
-  max-width: 400px;
-  margin: 20px;
+  width: 380px;
 }
 
 /* Title bar */
