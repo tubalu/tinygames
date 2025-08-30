@@ -169,6 +169,7 @@ onMounted(async () => {
     inset 1px 1px 0px #ffffff,
     2px 2px 4px rgba(0, 0, 0, 0.3);
   width: 380px;
+  min-height: 220px;
 }
 
 /* Title bar */
@@ -321,7 +322,7 @@ onMounted(async () => {
 
 /* Animation */
 .name-input-window {
-  animation: dialogAppear 0.2s ease-out;
+  /* animation: dialogAppear 0.2s ease-out; */
 }
 
 @keyframes dialogAppear {
