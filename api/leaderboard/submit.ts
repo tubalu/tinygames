@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+const { v4: uuidv4 } = require('uuid')
 
 interface ScoreSubmission {
   gameType: string
@@ -24,7 +24,7 @@ let mockLeaderboard: { [key: string]: LeaderboardEntry[] } = {}
 // For local development without KV
 const isLocal = process.env.NODE_ENV === 'development' && !process.env.KV_REST_API_URL
 
-export default async function handler(req: any, res: any) {
+module.exports = async function handler(req: any, res: any) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
@@ -83,7 +83,7 @@ export default async function handler(req: any, res: any) {
     } else {
       // Production: use Vercel KV
       try {
-        const { kv } = await import('@vercel/kv')
+        const { kv } = require('@vercel/kv')
         
         // Store in KV with sorted set for fast retrieval
         await kv.zadd(key, { score: body.score, member: JSON.stringify(entry) })
@@ -104,4 +104,4 @@ export default async function handler(req: any, res: any) {
 }
 
 // Export mock leaderboard for local development access
-export { mockLeaderboard }
+module.exports.mockLeaderboard = mockLeaderboard

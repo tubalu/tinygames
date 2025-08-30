@@ -1,4 +1,4 @@
-import { mockLeaderboard } from './submit'
+const { mockLeaderboard } = require('./submit')
 
 interface LeaderboardEntry {
   id: string
@@ -17,7 +17,7 @@ interface LeaderboardEntry {
 // For local development without KV
 const isLocal = process.env.NODE_ENV === 'development' && !process.env.KV_REST_API_URL
 
-export default async function handler(req: any, res: any) {
+module.exports = async function handler(req: any, res: any) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
@@ -50,7 +50,7 @@ export default async function handler(req: any, res: any) {
     } else {
       // Production: use Vercel KV
       try {
-        const { kv } = await import('@vercel/kv')
+        const { kv } = require('@vercel/kv')
         
         // Get scores (ascending order - lower time is better for minesweeper)
         const scores = await kv.zrange(key, 0, maxResults - 1)
