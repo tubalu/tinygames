@@ -149,12 +149,14 @@ onMounted(async () => {
   z-index: 1000;
   font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 11px;
+  padding: 20px;
 }
 
 .name-input-window {
   position: fixed;
-  top: calc(50vh - 110px);
-  left: calc(50vw - 190px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: #c0c0c0;
   border: 2px solid;
   border-color: #dfdfdf #808080 #808080 #dfdfdf;
@@ -163,6 +165,9 @@ onMounted(async () => {
     2px 2px 4px rgba(0, 0, 0, 0.3);
   width: 380px;
   height: 220px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Title bar */
@@ -203,6 +208,9 @@ onMounted(async () => {
 /* Dialog content */
 .dialog-content {
   padding: 16px;
+  height: calc(220px - 20px); /* Total height minus title bar */
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .score-info {

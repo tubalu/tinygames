@@ -296,17 +296,15 @@ function checkWinCondition() {
     gameStatus.value = 'won'
     stopTimer()
     
-    // Auto-flag all mines with animation first
-    autoFlagRemainingMines()
-    
-    // Show name input dialog after a delay to avoid layout conflicts
-    setTimeout(() => {
+    // Auto-flag all mines with animation first, then show dialog
+    autoFlagRemainingMines(() => {
+      // Show name input dialog with calc() positioning
       showNameInputDialog.value = true
-    }, 100)
+    })
   }
 }
 
-function autoFlagRemainingMines() {
+function autoFlagRemainingMines(onComplete?: () => void) {
   const unflaggedMines: Array<{row: number, col: number}> = []
   
   // Find all unflagged mines
@@ -317,6 +315,12 @@ function autoFlagRemainingMines() {
       }
     })
   })
+  
+  // If no mines to flag, call callback immediately
+  if (unflaggedMines.length === 0) {
+    onComplete?.()
+    return
+  }
   
   // Flag them one by one with a nice animation
   unflaggedMines.forEach((mine, index) => {
@@ -331,6 +335,9 @@ function autoFlagRemainingMines() {
           celebrateWin.value = false
         }, 1000)
         console.log('🎉 All mines flagged!')
+        
+        // Call completion callback after flagging is done
+        onComplete?.()
       }
     }, index * 100) // 100ms delay between each flag
   })
