@@ -1,0 +1,112 @@
+{
+  "timestamp": "2025-08-29T18:49:39.000Z",
+  "project_name": "vue-1st",
+  "project_type": "vue_spa",
+  "scan_summary": {
+    "total_estimated_files": 85,
+    "scanned_files": 35,
+    "coverage_percentage": 41.2,
+    "scan_depth": "comprehensive"
+  },
+  "modules": [
+    {
+      "path": ".",
+      "name": "root",
+      "type": "vue_spa",
+      "description": "Vue 3 Minesweeper Game - Single Page Application",
+      "entry_points": [
+        "src/main.ts",
+        "index.html"
+      ],
+      "key_interfaces": [
+        "src/App.vue",
+        "src/router/index.ts"
+      ],
+      "dependencies": [
+        "package.json"
+      ],
+      "tests": [
+        "src/components/__tests__/",
+        "e2e/"
+      ],
+      "configs": [
+        "vite.config.ts",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "eslint.config.mjs",
+        "tsconfig.json"
+      ]
+    },
+    {
+      "path": "src/components",
+      "name": "components",
+      "type": "vue_components",
+      "description": "Vue Components Library",
+      "entry_points": [
+        "src/components/Minesweeper.vue"
+      ],
+      "key_interfaces": [
+        "src/components/HelloWorld.vue",
+        "src/components/TheWelcome.vue",
+        "src/components/WelcomeItem.vue"
+      ],
+      "tests": [
+        "src/components/__tests__/HelloWorld.spec.ts"
+      ]
+    },
+    {
+      "path": "src/stores",
+      "name": "stores",
+      "type": "pinia_stores",
+      "description": "Pinia State Management",
+      "entry_points": [
+        "src/stores/counter.ts"
+      ]
+    },
+    {
+      "path": "src/views",
+      "name": "views",
+      "type": "vue_views",
+      "description": "Vue Router Views",
+      "entry_points": [
+        "src/views/HomeView.vue",
+        "src/views/AboutView.vue"
+      ]
+    },
+    {
+      "path": "e2e",
+      "name": "e2e_tests",
+      "type": "playwright_tests",
+      "description": "End-to-End Tests",
+      "entry_points": [
+        "e2e/vue.spec.ts"
+      ],
+      "configs": [
+        "playwright.config.ts"
+      ]
+    }
+  ],
+  "technologies": [
+    "Vue 3",
+    "TypeScript",
+    "Vite",
+    "Pinia",
+    "Vue Router",
+    "Vitest",
+    "Playwright",
+    "ESLint"
+  ],
+  "ignored_patterns": [
+    "node_modules/**",
+    ".git/**",
+    "dist/**",
+    "coverage/**",
+    "*.log"
+  ],
+  "gaps": [
+    "Limited unit test coverage beyond HelloWorld component",
+    "No component-specific documentation",
+    "Missing integration tests for Minesweeper game logic"
+  ],
+  "truncated": false
+}
