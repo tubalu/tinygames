@@ -168,7 +168,7 @@ const fetchLeaderboard = async () => {
   
   try {
     const response = await fetch(
-      `/api/leaderboard/get?game=${selectedGame.value}&difficulty=${selectedDifficulty.value}&limit=50`
+      `/api/leaderboard/get?game=${selectedGame.value}&difficulty=${selectedDifficulty.value}&limit=10`
     )
     
     if (!response.ok) {

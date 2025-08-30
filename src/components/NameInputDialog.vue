@@ -6,21 +6,25 @@
         <span class="title-text">🏆 New High Score!</span>
         <button class="control-button close" @click="handleSkip">×</button>
       </div>
-      
+
       <!-- Dialog content -->
       <div class="dialog-content">
         <div class="score-info">
           <p class="congratulations">Congratulations!</p>
-          <p class="time-display">You finished {{ difficultyDisplay }} in {{ formatTime(score) }}!</p>
+          <p class="time-display">
+            You finished {{ difficultyDisplay }} in {{ formatTime(score) }}!
+          </p>
         </div>
-        
+
         <div class="input-section">
-          <label class="input-label">Enter your name for the global leaderboard:</label>
+          <label class="input-label"
+            >Enter your name for the global leaderboard:</label
+          >
           <div class="input-wrapper">
-            <input 
+            <input
               ref="nameInputRef"
               v-model="playerName"
-              type="text" 
+              type="text"
               maxlength="20"
               placeholder="Your name (optional)"
               class="name-input"
@@ -28,29 +32,27 @@
               @keyup.escape="handleSkip"
             />
           </div>
-          <div class="input-hint">
-            Leave blank to submit as "Anonymous"
-          </div>
+          <div class="input-hint">Leave blank to submit as "Anonymous"</div>
         </div>
-        
+
         <!-- Button panel -->
         <div class="button-panel">
-          <button 
-            class="win-button submit" 
+          <button
+            class="win-button submit"
             @click="handleSubmit"
             :disabled="isSubmitting"
           >
             {{ isSubmitting ? 'Submitting...' : getSubmitButtonText() }}
           </button>
-          <button 
-            class="win-button skip" 
+          <button
+            class="win-button skip"
             @click="handleSkip"
             :disabled="isSubmitting"
           >
             Skip
           </button>
         </div>
-        
+
         <!-- Error message -->
         <div v-if="errorMessage" class="error-message">
           {{ errorMessage }}
@@ -72,7 +74,7 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'submit', data: { name: string, score: number }): void
+  (e: 'submit', data: { name: string; score: number }): void
   (e: 'skip'): void
   (e: 'close'): void
 }
@@ -95,23 +97,25 @@ const getSubmitButtonText = () => {
 const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60)
   const secs = seconds % 60
-  return mins > 0 ? `${mins}:${secs.toString().padStart(2, '0')}` : `${secs} seconds`
+  return mins > 0
+    ? `${mins}:${secs.toString().padStart(2, '0')}`
+    : `${secs} seconds`
 }
 
 const handleSubmit = async () => {
   if (isSubmitting.value) return
-  
+
   isSubmitting.value = true
   errorMessage.value = ''
-  
+
   try {
     const finalName = playerName.value.trim() || 'Anonymous'
-    
+
     // Save the name for next time (only if not empty/Anonymous)
     if (finalName !== 'Anonymous') {
       PlayerStorageService.savePlayerName(finalName)
     }
-    
+
     emit('submit', { name: finalName, score: props.score })
   } catch (error) {
     errorMessage.value = 'Failed to submit score. Please try again.'
@@ -160,7 +164,7 @@ onMounted(async () => {
   background: #c0c0c0;
   border: 2px solid;
   border-color: #dfdfdf #808080 #808080 #dfdfdf;
-  box-shadow: 
+  box-shadow:
     inset 1px 1px 0px #ffffff,
     2px 2px 4px rgba(0, 0, 0, 0.3);
   width: 380px;
