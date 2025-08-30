@@ -29,6 +29,7 @@ export interface LeaderboardResponse {
   game: string
   difficulty: string
   total: number
+  error?: string
 }
 
 export interface SubmissionResponse {
