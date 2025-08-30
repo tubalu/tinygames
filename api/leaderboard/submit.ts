@@ -21,8 +21,8 @@ interface LeaderboardEntry extends ScoreSubmission {
 // In production, this will be replaced with Vercel KV
 let mockLeaderboard: { [key: string]: LeaderboardEntry[] } = {}
 
-// For local development without KV
-const isLocal = process.env.NODE_ENV === 'development' && !process.env.KV_REST_API_URL
+// For local development without Redis
+const isLocal = process.env.NODE_ENV === 'development' && !process.env.REDIS_URL
 
 module.exports = async function handler(req: any, res: any) {
   // Set CORS headers
@@ -81,17 +81,23 @@ module.exports = async function handler(req: any, res: any) {
       
       console.log(`Local leaderboard updated for ${key}:`, entry)
     } else {
-      // Production: use Vercel KV
+      // Production: use Redis Cloud via Vercel
       try {
-        const { kv } = require('@vercel/kv')
+        const { createClient } = require('redis')
         
-        // Store in KV with sorted set for fast retrieval
-        await kv.zadd(key, { score: body.score, member: JSON.stringify(entry) })
+        // Initialize Redis client with REDIS_URL
+        const redis = await createClient({ url: process.env.REDIS_URL }).connect()
+        
+        // Store in Redis with sorted set for fast retrieval
+        await redis.zAdd(key, { score: body.score, value: JSON.stringify(entry) })
         
         // Keep only top 100 scores
-        await kv.zremrangebyrank(key, 100, -1)
+        await redis.zRemRangeByRank(key, 100, -1)
+        
+        // Close connection
+        await redis.disconnect()
       } catch (error) {
-        console.error('KV operation failed:', error)
+        console.error('Redis operation failed:', error)
         return res.status(500).json({ error: 'Database operation failed' })
       }
     }

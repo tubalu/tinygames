@@ -14,8 +14,8 @@ interface LeaderboardEntry {
   }
 }
 
-// For local development without KV
-const isLocal = process.env.NODE_ENV === 'development' && !process.env.KV_REST_API_URL
+// For local development without Redis
+const isLocal = process.env.NODE_ENV === 'development' && !process.env.REDIS_URL
 
 module.exports = async function handler(req: any, res: any) {
   // Set CORS headers
@@ -48,16 +48,22 @@ module.exports = async function handler(req: any, res: any) {
       leaderboard = (mockLeaderboard[key] || []).slice(0, maxResults)
       console.log(`Local leaderboard fetched for ${key}:`, leaderboard.length, 'entries')
     } else {
-      // Production: use Vercel KV
+      // Production: use Redis Cloud via Vercel
       try {
-        const { kv } = require('@vercel/kv')
+        const { createClient } = require('redis')
+        
+        // Initialize Redis client with REDIS_URL
+        const redis = await createClient({ url: process.env.REDIS_URL }).connect()
         
         // Get scores (ascending order - lower time is better for minesweeper)
-        const scores = await kv.zrange(key, 0, maxResults - 1)
+        const scores = await redis.zRange(key, 0, maxResults - 1)
         
         leaderboard = scores.map(score => JSON.parse(score as string))
+        
+        // Close connection
+        await redis.disconnect()
       } catch (error) {
-        console.error('KV operation failed:', error)
+        console.error('Redis operation failed:', error)
         return res.status(500).json({ error: 'Database operation failed' })
       }
     }
