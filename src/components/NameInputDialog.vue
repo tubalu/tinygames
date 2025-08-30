@@ -81,7 +81,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const nameInputRef = ref<HTMLInputElement>()
-const playerName = ref('')
+const playerName = ref(PlayerStorageService.getSavedPlayerName() || '')
 const isSubmitting = ref(false)
 const errorMessage = ref('')
 
@@ -130,13 +130,7 @@ const handleBackdropClick = () => {
 }
 
 onMounted(async () => {
-  // Pre-fill with saved name
-  const savedName = PlayerStorageService.getSavedPlayerName()
-  if (savedName) {
-    playerName.value = savedName
-  }
-  
-  // Focus the input
+  // Focus and select the input text
   await nextTick()
   nameInputRef.value?.focus()
   nameInputRef.value?.select()
@@ -159,9 +153,8 @@ onMounted(async () => {
 
 .name-input-window {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: calc(50vh - 110px);
+  left: calc(50vw - 190px);
   background: #c0c0c0;
   border: 2px solid;
   border-color: #dfdfdf #808080 #808080 #dfdfdf;
@@ -169,7 +162,7 @@ onMounted(async () => {
     inset 1px 1px 0px #ffffff,
     2px 2px 4px rgba(0, 0, 0, 0.3);
   width: 380px;
-  min-height: 220px;
+  height: 220px;
 }
 
 /* Title bar */
@@ -322,17 +315,6 @@ onMounted(async () => {
 
 /* Animation */
 .name-input-window {
-  /* animation: dialogAppear 0.2s ease-out; */
-}
-
-@keyframes dialogAppear {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
+  /* No animation - appears instantly to avoid positioning conflicts */
 }
 </style>

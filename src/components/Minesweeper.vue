@@ -296,11 +296,13 @@ function checkWinCondition() {
     gameStatus.value = 'won'
     stopTimer()
     
-    // Show name input dialog for leaderboard submission
-    showNameInputDialog.value = true
-    
-    // Auto-flag all mines with animation
+    // Auto-flag all mines with animation first
     autoFlagRemainingMines()
+    
+    // Show name input dialog after a delay to avoid layout conflicts
+    setTimeout(() => {
+      showNameInputDialog.value = true
+    }, 100)
   }
 }
 
