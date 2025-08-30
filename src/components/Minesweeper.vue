@@ -30,6 +30,7 @@
             </div>
           </div>
         </div>
+        <div class="menu-item" @click="showLeaderboard">Scores</div>
         <span class="menu-item">Help</span>
       </div>
       
@@ -54,7 +55,7 @@
       </div>
       
       <!-- Game board -->
-      <div class="game-container">
+      <div class="game-container" :class="`difficulty-${currentDifficulty}`">
         <div class="game-board" :class="{ 'game-over': gameStatus !== 'playing' }">
           <div v-for="(row, rowIndex) in board" :key="rowIndex" class="board-row">
             <div
@@ -84,11 +85,34 @@
         </div>
       </div>
     </div>
+
+    <!-- Name Input Dialog -->
+    <NameInputDialog
+      v-if="showNameInputDialog"
+      :score="timer"
+      :difficulty="currentDifficulty"
+      @submit="handleScoreSubmission"
+      @skip="handleSkipSubmission"
+      @close="showNameInputDialog = false"
+    />
+
+    <!-- Leaderboard Modal -->
+    <LeaderboardModal
+      v-if="showLeaderboardModal"
+      :initial-game="'minesweeper'"
+      :initial-difficulty="currentDifficulty"
+      :highlight-entry-id="lastSubmittedEntryId"
+      @close="showLeaderboardModal = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import NameInputDialog from './NameInputDialog.vue'
+import LeaderboardModal from './LeaderboardModal.vue'
+import { useGlobalLeaderboard } from '@/composables/useGlobalLeaderboard'
+import type { MineweeperDifficulty } from '@/types/leaderboard'
 
 interface Cell {
   isMine: boolean
@@ -97,8 +121,8 @@ interface Cell {
   adjacentMines: number
 }
 
-// Classic Minesweeper difficulty settings
-type Difficulty = 'beginner' | 'intermediate' | 'expert'
+// Classic Minesweeper difficulty settings (using imported type)
+type Difficulty = MineweeperDifficulty
 
 interface DifficultyConfig {
   width: number
@@ -133,6 +157,14 @@ const smileyPressed = ref(false)
 const isMouseDown = ref(false)
 const currentHoverCell = ref<{row: number, col: number} | null>(null)
 const celebrateWin = ref(false)
+
+// Leaderboard state
+const showNameInputDialog = ref(false)
+const showLeaderboardModal = ref(false)
+const lastSubmittedEntryId = ref<string | undefined>(undefined)
+
+// Leaderboard composable
+const { submitScore } = useGlobalLeaderboard()
 
 const remainingMines = computed(() => {
   const flaggedCount = board.value.flat().filter(cell => cell.isFlagged).length
@@ -264,6 +296,9 @@ function checkWinCondition() {
     gameStatus.value = 'won'
     stopTimer()
     
+    // Show name input dialog for leaderboard submission
+    showNameInputDialog.value = true
+    
     // Auto-flag all mines with animation
     autoFlagRemainingMines()
   }
@@ -299,6 +334,46 @@ function autoFlagRemainingMines() {
   })
 }
 
+// Leaderboard handlers
+async function handleScoreSubmission(data: { name: string, score: number }) {
+  try {
+    const entry = await submitScore({
+      gameType: 'minesweeper',
+      difficulty: currentDifficulty.value,
+      score: data.score,
+      playerName: data.name,
+      gameConfig: {
+        boardWidth: boardWidth.value,
+        boardHeight: boardHeight.value,
+        minesCount: minesCount.value
+      }
+    })
+
+    if (entry) {
+      lastSubmittedEntryId.value = entry.id
+    }
+
+    // Close name input dialog and show leaderboard
+    showNameInputDialog.value = false
+    showLeaderboardModal.value = true
+  } catch (error) {
+    console.error('Failed to submit score:', error)
+    // Still show leaderboard even if submission failed
+    showNameInputDialog.value = false
+    showLeaderboardModal.value = true
+  }
+}
+
+function handleSkipSubmission() {
+  showNameInputDialog.value = false
+  showLeaderboardModal.value = true
+}
+
+function showLeaderboard() {
+  showLeaderboardModal.value = true
+  gameMenuOpen.value = false
+}
+
 function resetGame() {
   gameStatus.value = 'playing'
   timer.value = 0
@@ -306,6 +381,9 @@ function resetGame() {
   pressedCells.value.clear()
   mouseButtons.value.clear()
   celebrateWin.value = false
+  showNameInputDialog.value = false
+  showLeaderboardModal.value = false
+  lastSubmittedEntryId.value = undefined
   stopTimer()
   initializeBoard()
 }
@@ -542,7 +620,7 @@ onUnmounted(() => {
   border-bottom: 1px solid #808080;
   padding: 4px 8px;
   display: flex;
-  gap: 16px;
+  gap: 0;
   overflow: visible;
 }
 
@@ -656,6 +734,18 @@ onUnmounted(() => {
 .game-container {
   padding: 8px;
   background: #c0c0c0;
+}
+
+.game-container.difficulty-beginner {
+  padding: 8px; /* Same padding as other difficulties */
+}
+
+.game-container.difficulty-intermediate {
+  padding: 8px;
+}
+
+.game-container.difficulty-expert {
+  padding: 8px;
 }
 
 /* Game board */
